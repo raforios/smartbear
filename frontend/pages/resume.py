@@ -150,7 +150,7 @@ st.markdown('# Rafael R&iacute;os Basc&oacute;n')
 st.write("---")
 current_dir = os.getcwd()
 path = Path(current_dir)
-image_path = os.path.join(path, 'static', 'img', 'rrb.png')
+image_path = os.path.join(path, 'frontend/static', 'img', 'rrb.png')
 
 st.write(f'Ruta principal: {path}')
 st.write(f'Ruta imagen: {image_path}')

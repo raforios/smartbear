@@ -10,3 +10,4 @@ matplotlib
 seaborn
 osmnx
 SQLAlchemy
+psycopg2-binary

@@ -1,0 +1,10 @@
+matplotlib
+openpyxl
+folium
+googlemaps
+seaborn
+plotly
+geopandas
+ipywidgets
+ipympl
+nbformat

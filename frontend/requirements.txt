@@ -1,0 +1,7 @@
+streamlit
+streamlit_folium
+openai
+## streamlit_cookies_controller
+numerize
+python-docx
+plotly

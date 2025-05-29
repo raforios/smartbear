@@ -1,0 +1,24 @@
+FROM python:3.13.0-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 3000
+
+ARG PROTOCOL
+ARG URL
+ARG PORT
+ARG MINUTES
+ARG STATUS
+ARG CANCELLATION
+ARG MINUTES_CANCELLATION
+ARG DAYS
+
+CMD ["python", "main.py"]
+

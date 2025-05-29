@@ -2,6 +2,8 @@
     Resume Page
 '''
 import streamlit as st
+import os
+from pathlib import Path
 
 from layout.menu import menu
 from layout.utils import local_css, local_img, local_docs
@@ -146,6 +148,14 @@ menu()
 # local_css('static/css/style.css')
 st.markdown('# Rafael R&iacute;os Basc&oacute;n')
 st.write("---")
+current_dir = os.getcwd()
+path = Path(current_dir)
+image_path = os.path.join(path, 'static', 'img', 'rrb.png')
+
+st.write(f'Ruta principal: {path}')
+st.write(f'Ruta imagen: {image_path}')
+
+
 abstract()
 st.write("---")
 content()

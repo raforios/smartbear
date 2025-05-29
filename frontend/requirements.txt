@@ -4,4 +4,8 @@ openai
 ## streamlit_cookies_controller
 numerize
 python-docx
+folium
 plotly
+matplotlib
+seaborn
+osmnx

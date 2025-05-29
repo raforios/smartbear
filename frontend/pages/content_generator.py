@@ -5,11 +5,12 @@ import streamlit as st
 import pandas as pd
 from openai import OpenAI as ai
 
-from utils.environment import PARAMETERS
+# from utils.environment import PARAMETERS
 from layout.menu import menu
 from utils.create_office_files import create_word_doc
 
-client = ai(api_key = PARAMETERS.get('OPENAI_KEY'))
+# client = ai(api_key = PARAMETERS.get('OPENAI_KEY'))
+client = ai(api_key = st.secrets['OPENAI_KEY'])
 
 def article_generator(topic):
     try:

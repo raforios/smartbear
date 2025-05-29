@@ -24,7 +24,7 @@ def local_img(file) -> str:
 
     current_dir = os.getcwd()
     path = Path(current_dir)
-    image_path = os.path.join(path, 'static', 'img', file)
+    image_path = os.path.join(path, 'frontend/static', 'img', file)
 
     if not os.path.exists(image_path):
         image_path = ''
@@ -38,7 +38,7 @@ def local_docs(file) -> str:
 
     current_dir = os.getcwd()
     path = Path(current_dir)
-    doc_path = os.path.join(path, 'static', 'docs', file)
+    doc_path = os.path.join(path, 'frontend/static', 'docs', file)
 
     if os.path.exists(doc_path):
         with open(doc_path, "rb") as file:

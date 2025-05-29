@@ -145,7 +145,7 @@ st.set_page_config(
 )
 
 menu()
-# local_css('static/css/style.css')
+# local_css('frontend/static/css/style.css')
 st.markdown('# Rafael R&iacute;os Basc&oacute;n')
 st.write("---")
 current_dir = os.getcwd()

@@ -1,13 +1,15 @@
 '''
     File library with common functions to process external files
 '''
+import streamlit as st
 import random
 import pandas as pd
 import numpy as np
 import sqlalchemy as sa
-from utils.environment import PARAMETERS
+# from utils.environment import PARAMETERS
 
-engine = sa.create_engine(PARAMETERS.get('DATABASE_URL'))
+# engine = sa.create_engine(PARAMETERS.get('DATABASE_URL'))
+engine = sa.create_engine(st.secrets['DATABASE_URL'])
 
 # ----------------------------------------------------------------
 # Generating a list of hexadecimal colors
@@ -34,7 +36,8 @@ def get_excel_data(file_name: str) -> pd.DataFrame:
     ''' 
         Read data from excel file
     '''
-    data_df = pd.read_excel(f'{PARAMETERS['DATA_FOLDER']}/{file_name}')
+    # data_df = pd.read_excel(f'{PARAMETERS.get('DATA_FOLDER')}/{file_name}')
+    data_df = pd.read_excel(f'{st.secrets['DATA_FOLDER']}/{file_name}')
     return data_df
 
 # ----------------------------------------------------------------

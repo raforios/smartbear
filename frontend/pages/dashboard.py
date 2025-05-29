@@ -28,7 +28,7 @@ color_continuous_scale=['#2effc3','#25c99a','#105743']
 # https://medium.muz.li/dashboards-inspiration-2018-77b3ab185483
 
 # Cargamos archivo de estilos
-utils.local_css('static/estilo.css')
+# utils.local_css('static/estilo.css')
 
 
 # Obtenemos año actual
@@ -36,7 +36,7 @@ today = datetime.date.today()
 year = today.year
 
 # Cargamos el dataframe desde un CSV
-dfDatos = pd.read_csv('pages/gapminder_data.csv')
+dfDatos = pd.read_csv(f'{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
 
 # Declaramos los parámetros en la barra lateral
 # Filtro de continente

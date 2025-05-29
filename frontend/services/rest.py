@@ -2,10 +2,11 @@
     Rest functions
 '''
 
+import streamlit as st
 # import json
 import pandas as pd
 import requests as req
-from utils.environment import PARAMETERS
+# from utils.environment import PARAMETERS
 
 def get_data(url, headers = '', primary = 0, field = 'data') -> pd.DataFrame:
     '''
@@ -63,8 +64,10 @@ def login(url) -> str:
         Login into SmartBear API
     '''
     data = {
-        'email' : PARAMETERS.get('EMAIL'),
-        'password' : PARAMETERS.get('PASSWORD')
+        # 'email' : PARAMETERS.get('EMAIL'),
+        # 'password' : PARAMETERS.get('PASSWORD')
+        'email' : st.secrets['EMAIL'],
+        'password' : st.secrets['PASSWORD']
     }
     endpoint_login = '/api/v1/login'
     url_login = f'{url}{endpoint_login}'

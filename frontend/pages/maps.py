@@ -13,7 +13,8 @@ st.set_page_config(
 )
 
 st.header('Visor de Mapas en Streamlit')
-dfRestaurantes= pd.read_csv(f'{st.secrets['DATA_FOLDER']}/googlemaps_comida china.csv')
+# dfRestaurantes= pd.read_csv(f'{st.secrets['DATA_FOLDER']}/googlemaps_comida china.csv')
+dfRestaurantes= pd.read_csv(f'frontend/{st.secrets['DATA_FOLDER']}/googlemaps_comida china.csv')
 dfRestaurantes['review_count']=dfRestaurantes['review_count'].fillna(1)
 
 tab1,tab2,tab3,tab4=st.tabs(['Mapa Plotly','Mapa Choropleth','Mapa Folium' ,'Datos'])

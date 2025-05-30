@@ -1,8 +1,8 @@
 '''
     Library to create Microsoft Office files
 '''
-from docx import Document
 from io import BytesIO
+from docx import Document
 
 def create_word_doc(title, content):
     '''
@@ -11,9 +11,9 @@ def create_word_doc(title, content):
     doc = Document()
     doc.add_heading(title, 0)
     doc.add_paragraph(content)
-    
+
     buffer = BytesIO()
     doc.save(buffer)
     buffer.seek(0)
-    
+
     return buffer

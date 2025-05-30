@@ -1,3 +1,6 @@
+'''
+    Utils for laout functions
+'''
 # import plotly.express as px
 import os
 import base64
@@ -8,50 +11,55 @@ def local_css(file_name):
     '''
         Loading local CSS files
     '''
-    with open(file_name) as f:
+    with open(file_name, 'r', encoding = 'utf-8') as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
 
 def remote_css(url):
     '''
         Loading remote CSS files
     '''
-    st.markdown(f'<link href="{url}" rel="stylesheet">', unsafe_allow_html = True)   
+    st.markdown(f'<link href="{url}" rel="stylesheet">', unsafe_allow_html = True)
 
-def local_img(file) -> str:
+def local_file(file_name, server = False, sub_dir = 'img') -> str:
     '''
-        Loading local IMG files
+        Loading local files
     '''
-
     current_dir = os.getcwd()
     path = Path(current_dir)
-    image_path = os.path.join(path, 'frontend/static', 'img', file)
+    folder = 'frontend/static' if server else 'static'
+    file_path = os.path.join(path, folder, sub_dir, file_name)
 
-    if not os.path.exists(image_path):
-        image_path = ''
+    if os.path.exists(file_path):
+        if sub_dir == 'img':
+            return file_path
+        if sub_dir == 'doc':
+            with open(file_path, 'rb', encoding = 'utf-8') as file:
+                file_contents = file.read()
+                b64_file = base64.b64encode(file_contents).decode()
+                return b64_file
+        if sub_dir == 'css':
+            with open(file_path, 'r', encoding = 'utf-8') as file:
+                return f'<style>{file.read()}</style>'
 
-    return image_path
-
-def local_docs(file) -> str:
-    '''
-        Loading local DOCS files
-    '''
-
-    current_dir = os.getcwd()
-    path = Path(current_dir)
-    doc_path = os.path.join(path, 'frontend/static', 'docs', file)
-
-    if os.path.exists(doc_path):
-        with open(doc_path, "rb") as file:
-            file_contents = file.read()
-            b64_file = base64.b64encode(file_contents).decode()
-            return b64_file
-            
     return None
 
-def generateIconMetric(fa_icon):              
-    return st.write(f'<div class="iconMetric" style="background-color:#5155c3;height:70px;width:70px;text-align:center"><i class="fa-solid {fa_icon} fa-2xl" style="line-height:50px;margin:auto;color:white;"></i></div>', unsafe_allow_html=True)        
+def generate_icon_metric(fa_icon):
+    '''
+    Function
+    '''
+    return st.write(f'''<div class="iconMetric"
+                    style="background-color:#5155c3;
+                    height:70px;
+                    width:70px;
+                    text-align:center">
+                    <i class="fa-solid {fa_icon} fa-2xl" style="line-height:50px;
+                    margin:auto;color:white;">
+                    </i></div>''', unsafe_allow_html=True)
 
-def aplicarFormatoChart(fig,controls=False,legend=False,hoverTemplate=None):
+def aplicar_formato_chart(fig,controls=False,legend=False,hover_template=None):
+    '''
+    Function
+    '''
     fig.update_layout(paper_bgcolor='white')
     fig.update_layout(plot_bgcolor='white')
     fig.update_layout(showlegend=legend)
@@ -66,40 +74,45 @@ def aplicarFormatoChart(fig,controls=False,legend=False,hoverTemplate=None):
     #legend_title_font_color="green"
     )
 
-    if hoverTemplate:
-        if hoverTemplate=="%":
+    if hover_template:
+        if hover_template=="%":
             fig.update_traces(hovertemplate='<b>%{x}</b> <br> %{y:,.2%}')
-        elif hoverTemplate=="$":
+        elif hover_template=="$":
             fig.update_traces(hovertemplate='<b>%{x}</b> <br> $ %{y:,.1f}')
-        elif hoverTemplate=="#":
+        elif hover_template=="#":
             fig.update_traces(hovertemplate='<b>%{x}</b> <br> %{y:,.0f}')
     if controls:
         fig.update_xaxes(
-            rangeslider_visible=True           
+            rangeslider_visible=True
         )
     fig.update_layout(
             autosize=True,
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            )
+            margin = {
+                'l': 50,
+                'r': 50,
+                'b': 100,
+                't': 100,
+                'pad': 4                
+            }
     )
     return fig
 
-def generarTabla(df):
+def generar_tabla(df):
+    '''
+    Function
+    '''
     header = '</th><th>'.join(df.columns)
     header = f'<thead><tr><th>{header}</th><tr></thead>'
     items = ''
-    for index, row in df.iterrows():        
+    for _, row in df.iterrows():
         # item='</td><td>'.join(map(str,row.tolist()))
         # item = f'<tr><td>{item}</td><tr>'
-        item= [f'<td>{x}</td>' if type(x)==str else f'<td style="text-align:right">{x:,.0f}</td>' for x in row.tolist()]        
-        item=''.join(item)
+        item = [f'<td>{x}</td>' if isinstance(x, str) else
+                f'<td style="text-align:right">{x:,.0f}</td>'
+                for x in row.tolist()]
+        item = ''.join(item)
         item = f'<tr>{item}<tr>'
-        items=items+item
+        items = items+item
     table = f'<table class="dashboardTable">{header}<tbody>{items}</tbody></table>'
     # return table
     st.write(table,unsafe_allow_html=True)

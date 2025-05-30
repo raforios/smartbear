@@ -1,18 +1,23 @@
 '''
     Resume Page
 '''
-import streamlit as st
 import os
 from pathlib import Path
+import streamlit as st
 
 from layout.menu import menu
-from layout.utils import local_css, local_img, local_docs
+from layout.utils import local_file
 
 def abstract():
-    image1 = local_img('rrb.png')
+    '''
+        Resume Abstract
+    '''
+    image1 = local_file(file_name = 'rrb.png', sub_dir = 'img')
+    # image1 = local_file(file_name = 'rrb.png', server = True, sub_dir = 'img')
+
     _, col2, _ = st.columns([1, 1, 1])
 
-    rrb = f'''
+    rrb = '''
         <div class="profile-info">
             <h3>Ingeniero de Sistemas, Desarrollador Backend y DevOps</h3>
             <p>
@@ -42,11 +47,16 @@ def abstract():
     st.markdown(rrb, unsafe_allow_html = True)
 
 def content():
-    image2 = local_img('about.jpg')
-    b64_file = local_docs('cv.pdf')
+    '''
+        Resume Content
+    '''
+    image2 = local_file(file_name = 'about.jpg', sub_dir = 'img')
+    # image2 = local_file(file_name = 'about.jpg', server = True, sub_dir = 'img')
+    b64_file = local_file(file_name = 'cv.pdf', sub_dir = 'doc')
+    # b64_file = local_file(file_name = 'cv.pdf', server = True, sub_dir = 'doc')
     _, col2, _ = st.columns([1, 3, 1])
 
-    about = f'''
+    about = '''
         <div class="profile-info">
             <h3>Un poco más acerca de mi...</h3>
             <p>
@@ -77,7 +87,8 @@ def content():
         '''
     doc = f'''
         <div class="profile-info">
-            <a href="data:application/pdf;base64,{b64_file}" download="Rafael_Rios_Bascon_CV.pdf" class="btn-css">Descarga mi CV</a>
+            <a href="data:application/pdf;base64,{b64_file}"
+            download="Rafael_Rios_Bascon_CV.pdf" class="btn-css">Descarga mi CV</a>
         </div>
         '''
 
@@ -94,7 +105,10 @@ def content():
         st.markdown(doc, unsafe_allow_html = True)
 
 def contact():
-    contact = f'''
+    '''
+        Resume Contact
+    '''
+    address = '''
         <div class="contact-info">
             <h3 class="title">Contacto:</h3>
             <ul>
@@ -134,7 +148,7 @@ def contact():
         </div>
         '''
 
-    st.markdown(contact, unsafe_allow_html = True)
+    st.markdown(address, unsafe_allow_html = True)
 
 
 st.set_page_config(
@@ -145,7 +159,11 @@ st.set_page_config(
 )
 
 menu()
-# local_css('frontend/static/css/style.css')
+css = local_file(file_name = 'style.css', sub_dir = 'css')
+# css = local_file(file_name = 'style.css', server = True, sub_dir = 'css')
+
+st.markdown(css, unsafe_allow_html = True)
+
 st.markdown('# Rafael R&iacute;os Basc&oacute;n')
 st.write("---")
 current_dir = os.getcwd()

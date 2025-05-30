@@ -13,7 +13,7 @@ st.set_page_config(
         'Get Help': 'mailto:raforios@gmail.com',
         'Report a bug': "mailto:raforios@gmail.com",
         'About': "# SmartBear APP. This is an *BETA* version!"
-    }    
+    }
 )
 def main():
     '''

@@ -23,11 +23,11 @@ def load_dataframes(route_id, day, dist) -> tuple:
     '''
     token = login_api()
     data = get_data(token, 'data_model', route_id, day, 1)
-    dtf_final = get_data(token, 'optimal_route', route_id, day, 1, dist)
-    distances = get_data(token, 'distance_matrix', route_id, day, 2)
-    dtf_route = get_data(token, 'route', route_id, day, 1, dist)
-    
-    return data, dtf_final, distances, dtf_route
+    data_final = get_data(token, 'optimal_route', route_id, day, 1, dist)
+    data_distances = get_data(token, 'distance_matrix', route_id, day, 2)
+    data_route = get_data(token, 'route', route_id, day, 1, dist)
+
+    return data, data_final, data_distances, data_route
 
 
 st.set_page_config(
@@ -71,25 +71,25 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(['Initial Data',
                                         'Final Route'])
 
 if ROUTE_ID and DAY and RADIO:
-    data, dtf_final, distances, dtf_route = load_dataframes(ROUTE_ID, DAY, RADIO)
-    # print(f'DATA: {data}')
+    dtf_data, dtf_final, distances, dtf_route = load_dataframes(ROUTE_ID, DAY, RADIO)
+    # print(f'DATA: {dtf_data}')
     # print(f'DTF FINAL: {dtf_final}')
     # print(f'DISTANCES: {distances}')
     # print(f'DTF ROUTE: {dtf_route}')
-    
-    if 'SERVER ERROR' in data:
+
+    if 'SERVER ERROR' in dtf_data:
         st.error('### **API ERROR**')
         st.warning(f'''##### No se obtuvo información desde la API
                 Parámetros enviados:
                 RUTA ID: {ROUTE_ID}
                 NÚMERO DE DÍA: {DAY}''')
     else:
-        start = data[data.index == 0][['y', 'x']].values[0]
+        start = dtf_data[dtf_data.index == 0][['y', 'x']].values[0]
 
         with tab1:
             st.subheader('Data from API')
             st.markdown('#### Data model')
-            st.dataframe(data)
+            st.dataframe(dtf_data)
 
             st.markdown('##### Map')
             st.write(f'starting point: {start}')
@@ -101,7 +101,7 @@ if ROUTE_ID and DAY and RADIO:
             if map_type == 'Cluster':
                 marker_cluster = MarkerCluster().add_to(map_draw)
 
-            for i, row in data.iterrows():
+            for i, row in dtf_data.iterrows():
 
                 marker = folium.CircleMarker(
                     location = [row['y'], row['x']],
@@ -123,10 +123,11 @@ if ROUTE_ID and DAY and RADIO:
 
         with tab2:
             st.subheader('Optimal distance algorithm between neighbors')
-            
+
             if 'SERVER ERROR' in dtf_final:
                 st.error('### **API ERROR**')
-                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta óptima o viable
+                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta
+                    óptima o viable
                     Dos o más nodos de los puntos almacenados no tienen proximidad para el algoritmo Dijkstra
                         Parámetros enviados:
                         RUTA ID: {ROUTE_ID}
@@ -137,15 +138,17 @@ if ROUTE_ID and DAY and RADIO:
                 route = []
                 size, _ = dtf_final.shape
                 for i, row in dtf_final.iterrows() :
-                    num = f'<b>NUM:</b> {int(i + 1)}<br>'
-                    orig = f'<b>START:</b> {int(dtf_final.iloc[i]['origin'])}<br>'
-                    dest = f'<b>END:</b> {int(dtf_final.iloc[i]['target'])}<br>'
-                    dist = f'<b>DIST:</b> {round(dtf_final.iloc[i]['distance'], 2)} m<br>'
-                    popup = f'{num}{orig}{dest}{dist}'
+                    NUM = f'<b>NUM:</b> {int(i + 1)}<br>'
+                    ORIG = f'<b>START:</b> {int(dtf_final.iloc[i]['origin'])}<br>'
+                    DEST = f'<b>END:</b> {int(dtf_final.iloc[i]['target'])}<br>'
+                    DIST = f'<b>DIST:</b> {round(dtf_final.iloc[i]['distance'], 2)} m<br>'
+                    POPUP = f'{NUM}{ORIG}{DEST}{DIST}'
                     folium.Marker(location = [row['y'], row['x']],
-                                icon = folium.Icon(color = 'red' if i == 0 else 'green' if i == size - 1 else 'cadetblue', 
-                                                icon = 'home' if i == 0 else 'flag' if i == size - 1 else 'info-sign'),
-                                tooltip = popup).add_to(route_map)
+                        icon = folium.Icon(color = 'red' if i == 0 else 'green'
+                                        if i == size - 1 else 'cadetblue',
+                                        icon = 'home' if i == 0 else 'flag'
+                                        if i == size - 1 else 'info-sign'),
+                        tooltip = POPUP).add_to(route_map)
                     lines = (row['y'], row['x'])
                     route.append(lines)
 
@@ -163,11 +166,11 @@ if ROUTE_ID and DAY and RADIO:
 
             heatmap_own = df_distances.copy()
             for col in heatmap_own.columns:
-                heatmap_own[col] = heatmap_own[col].apply(lambda x: 
+                heatmap_own[col] = heatmap_own[col].apply(lambda x:
                     0.3 if pd.isnull(x) else
-                    (0.7 if np.isinf(x) else 
+                    (0.7 if np.isinf(x) else
                     (0 if x != 0 else 1)) )
-                
+
             fig, ax = plt.subplots(figsize = (10,5))
             sns.heatmap(heatmap_own, vmin = 0 , vmax = 1 , cbar = False, ax = ax)
             st.pyplot(fig)
@@ -178,7 +181,8 @@ if ROUTE_ID and DAY and RADIO:
             route = []
             if 'SERVER ERROR' in dtf_final:
                 st.error('### **API ERROR**')
-                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta óptima o viable
+                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta
+                    óptima o viable
                     Dos o más nodos de los puntos almacenados no tienen proximidad para el algoritmo Dijkstra
                         Parámetros enviados:
                         RUTA ID: {ROUTE_ID}
@@ -187,19 +191,19 @@ if ROUTE_ID and DAY and RADIO:
                 size, _ = dtf_final.shape
 
                 for i, row in dtf_final.iterrows() :
-                    num = f'<b>NUM:</b> {int(i + 1)}<br>'
-                    orig = f'<b>START:</b> {int(dtf_final.iloc[i]['origin'])}<br>'
-                    dest = f'<b>END:</b> {int(dtf_final.iloc[i]['target'])}<br>'
-                    dist = f'<b>DIST:</b> {round(dtf_final.iloc[i]['distance'], 2)} m<br>'
-                    popup = f'{num}{orig}{dest}{dist}'
+                    NUM = f'<b>NUM:</b> {int(i + 1)}<br>'
+                    ORIG = f'<b>START:</b> {int(dtf_final.iloc[i]['origin'])}<br>'
+                    DEST = f'<b>END:</b> {int(dtf_final.iloc[i]['target'])}<br>'
+                    DIST = f'<b>DIST:</b> {round(dtf_final.iloc[i]['distance'], 2)} m<br>'
+                    POPUP = f'{NUM}{ORIG}{DEST}{DIST}'
                     if i == 0 :
                         folium.Marker(location = [row['y'], row['x']],
                                 icon = folium.Icon(color = 'red', icon='home'),
-                                tooltip = popup).add_to(map_start_end)
+                                tooltip = POPUP).add_to(map_start_end)
                     elif i == size - 1 :
                         folium.Marker(location = [row['y'], row['x']],
                                 icon = folium.Icon(color = 'green', icon='cloud'),
-                                tooltip = popup).add_to(map_start_end)
+                                tooltip = POPUP).add_to(map_start_end)
 
                     lines = (row['y'], row['x'])
                     route.append(lines)
@@ -217,7 +221,7 @@ if ROUTE_ID and DAY and RADIO:
                 for stop in dtf_route.itertuples():
                     initial_stop = stop.Index == 0
                     # marker for current stop
-                    icon = folium.Icon(icon = 'home' if initial_stop else 'cloud', 
+                    icon = folium.Icon(icon = 'home' if initial_stop else 'cloud',
                                     color = 'green' if initial_stop else 'lightgray',
                                     prefix = 'fa')
                     marker = folium.Marker(location = (stop.y, stop.x),
@@ -228,7 +232,7 @@ if ROUTE_ID and DAY and RADIO:
 
                     # line for the route segment connecting current to next stop
                     line = folium.PolyLine(
-                        locations = [(stop.y, stop.x), 
+                        locations = [(stop.y, stop.x),
                                 (stop.y_next, stop.x_next)],
                         # display the start, end, and distance of each segment
                         tooltip = f'<b>From</b>: {stop.origin} <br>' \
@@ -239,13 +243,13 @@ if ROUTE_ID and DAY and RADIO:
                     marker.add_to(map_route)
                     line.add_to(map_route)
 
-                # add route's last marker, as it wasn't included in for loop
-                folium.Marker(
-                    location = (stop.y_next, stop.x_next),
-                    tooltip = f'<b>Name</b>: {stop.target} <br>' \
-                        + f'<b>Stop number</b>: {stop.Index + 1} <br>', 
-                    icon = folium.Icon(icon = 'info-sign', color = 'cadetblue')
-                ).add_to(map_route)
+                    # add route's last marker, as it wasn't included in for loop
+                    folium.Marker(
+                        location = (stop.y_next, stop.x_next),
+                        tooltip = f'<b>Name</b>: {stop.target} <br>' \
+                            + f'<b>Stop number</b>: {stop.Index + 1} <br>',
+                        icon = folium.Icon(icon = 'info-sign', color = 'cadetblue')
+                    ).add_to(map_route)
 
                 # Mostrar el mapa
                 st.markdown('#### Start To End step by step')
@@ -257,7 +261,8 @@ if ROUTE_ID and DAY and RADIO:
             st.markdown('#### Data Optimized')
             if 'SERVER ERROR' in dtf_final:
                 st.error('### **API ERROR**')
-                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta óptima o viable
+                st.warning(f'''##### Durante el proceso de optimización no se encontró una ruta
+                    óptima o viable
                     Dos o más nodos de los puntos almacenados no tienen proximidad para el algoritmo Dijkstra
                         Parámetros enviados:
                         RUTA ID: {ROUTE_ID}
@@ -299,7 +304,9 @@ if ROUTE_ID and DAY and RADIO:
                 df_start = df_filtrado[df_filtrado['origin_node'] == first_node]
                 df_end = df_filtrado[df_filtrado['destination_node'] == last_node]
 
-                fig = px.scatter_map(data_frame = df, lon = 'x', lat = 'y', zoom = 15, width = 1500, height = 1000, animation_frame = 'id', map_style = 'carto-positron')
+                fig = px.scatter_map(data_frame = df, lon = 'x', lat = 'y', zoom = 15,
+                            width = 1500,
+                            height = 1000, animation_frame = 'id', map_style = 'carto-positron')
 
                 fig.data[0].marker = {'size': 12, 'color': 'blue'}
 
@@ -315,15 +322,14 @@ if ROUTE_ID and DAY and RADIO:
                 fig.add_trace(px.line_map(data_frame = df, lon = 'x', lat = 'y').data[0])
 
                 st.markdown('#### Final Route Map')
-                fig
 
                 st.markdown('#### Summary')
-                number_stops = 'Num stops'
-                total_distance = 'Distance'
-                total_time = 'Duration Time'
+                NUMBER_STOPS = 'Num stops'
+                TOTAL_DISTANCE = 'Distance'
+                TOTAL_TIME = 'Duration Time'
                 n_stops = dtf_route['origin'].size
                 time_distance = float(dtf_route['time_seg'].sum()/60)
                 distance = float(dtf_route['distance'].sum())
-                st.write(f'**{number_stops}:** {n_stops}')
-                st.write(f'**{total_time}:** {time_distance:.2f} minutes')
-                st.write(f'**{total_distance}:** {distance:.2f} meters')
+                st.write(f'**{NUMBER_STOPS}:** {n_stops}')
+                st.write(f'**{TOTAL_TIME}:** {time_distance:.2f} minutes')
+                st.write(f'**{TOTAL_DISTANCE}:** {distance:.2f} meters')

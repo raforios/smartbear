@@ -166,12 +166,12 @@ st.markdown(css, unsafe_allow_html = True)
 
 st.markdown('# Rafael R&iacute;os Basc&oacute;n')
 st.write("---")
-current_dir = os.getcwd()
-path = Path(current_dir)
-image_path = os.path.join(path, 'frontend/static', 'img', 'rrb.png')
+# current_dir = os.getcwd()
+# path = Path(current_dir)
+# image_path = os.path.join(path, 'frontend/static', 'img', 'rrb.png')
 
-st.write(f'Ruta principal: {path}')
-st.write(f'Ruta imagen: {image_path}')
+# st.write(f'Ruta principal: {path}')
+# st.write(f'Ruta imagen: {image_path}')
 
 
 abstract()

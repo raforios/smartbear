@@ -12,8 +12,8 @@ def abstract():
     '''
         Resume Abstract
     '''
-    image1 = local_file(file_name = 'rrb.png', sub_dir = 'img')
-    # image1 = local_file(file_name = 'rrb.png', server = True, sub_dir = 'img')
+    # image1 = local_file(file_name = 'rrb.png', sub_dir = 'img')
+    image1 = local_file(file_name = 'rrb.png', server = True, sub_dir = 'img')
 
     _, col2, _ = st.columns([1, 1, 1])
 
@@ -50,10 +50,10 @@ def content():
     '''
         Resume Content
     '''
-    image2 = local_file(file_name = 'about.jpg', sub_dir = 'img')
-    # image2 = local_file(file_name = 'about.jpg', server = True, sub_dir = 'img')
-    b64_file = local_file(file_name = 'cv.pdf', sub_dir = 'doc')
-    # b64_file = local_file(file_name = 'cv.pdf', server = True, sub_dir = 'doc')
+    # image2 = local_file(file_name = 'about.jpg', sub_dir = 'img')
+    image2 = local_file(file_name = 'about.jpg', server = True, sub_dir = 'img')
+    # b64_file = local_file(file_name = 'cv.pdf', sub_dir = 'doc')
+    b64_file = local_file(file_name = 'cv.pdf', server = True, sub_dir = 'doc')
     _, col2, _ = st.columns([1, 3, 1])
 
     about = '''
@@ -159,8 +159,8 @@ st.set_page_config(
 )
 
 menu()
-css = local_file(file_name = 'style.css', sub_dir = 'css')
-# css = local_file(file_name = 'style.css', server = True, sub_dir = 'css')
+# css = local_file(file_name = 'style.css', sub_dir = 'css')
+css = local_file(file_name = 'style.css', server = True, sub_dir = 'css')
 
 st.markdown(css, unsafe_allow_html = True)
 

@@ -25,8 +25,8 @@ def local_file(file_name, server = False, sub_dir = 'img') -> str:
     if os.path.exists(file_path):
         if sub_dir == 'img':
             return file_path
-        if sub_dir == 'doc':
-            with open(file_path, 'rb', encoding = 'utf-8') as file:
+        if sub_dir == 'docs':
+            with open(file_path, 'rb') as file:
                 file_contents = file.read()
                 b64_file = base64.b64encode(file_contents).decode()
                 return b64_file

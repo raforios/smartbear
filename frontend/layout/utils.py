@@ -7,13 +7,6 @@ import base64
 from pathlib import Path
 import streamlit as st
 
-def local_css(file_name):
-    '''
-        Loading local CSS files
-    '''
-    with open(file_name, 'r', encoding = 'utf-8') as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
-
 def remote_css(url):
     '''
         Loading remote CSS files

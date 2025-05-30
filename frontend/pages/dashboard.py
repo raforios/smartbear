@@ -3,7 +3,8 @@ import pandas as pd
 import plotly.express as px
 import datetime
 from numerize.numerize import numerize
-from layout import menu, utils
+from layout.menu import menu
+from layout.utils import local_file, aplicar_formato_chart, generar_tabla
 
  
  
@@ -17,7 +18,7 @@ st.set_page_config(
 )
 st.title('SmartBear')
 st.header('Dashboard')
-menu.menu()
+menu()
 
 
 
@@ -28,7 +29,10 @@ color_continuous_scale=['#2effc3','#25c99a','#105743']
 # https://medium.muz.li/dashboards-inspiration-2018-77b3ab185483
 
 # Cargamos archivo de estilos
-# utils.local_css('static/estilo.css')
+# css = local_file(file_name = 'estilo.css', sub_dir = 'css')
+css = local_file(file_name = 'estilo.css', server = True, sub_dir = 'css')
+
+st.markdown(css, unsafe_allow_html = True)
 
 
 # Obtenemos año actual
@@ -36,7 +40,8 @@ today = datetime.date.today()
 year = today.year
 
 # Cargamos el dataframe desde un CSV
-dfDatos = pd.read_csv(f'{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
+# dfDatos = pd.read_csv(f'{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
+dfDatos = pd.read_csv(f'frontend/{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
 
 # Declaramos los parámetros en la barra lateral
 # Filtro de continente
@@ -105,14 +110,14 @@ with c1:
                 annotation_text='Año actual', #Texto asociado a la línea
                 annotation_position='top left' #Positión del texto asociado a la línea
                 )    
-    st.plotly_chart(utils.aplicar_formato_chart(fig),use_container_width=True)    
+    st.plotly_chart(aplicar_formato_chart(fig),use_container_width=True)    
     
 with c2:
     dfPoblacionContinente = dfAnoActual.groupby('continent').agg({'population':'sum'}).reset_index()
     fig = px.bar(dfPoblacionContinente,x='continent',y='population', title=f'Población por continente {year}', color='continent',text_auto=',.0f',
                  color_discrete_sequence=color_discrete_sequence)
     fig.update_layout(showlegend=False) #Determina si se muestra o no la leyenda
-    st.plotly_chart(utils.aplicar_formato_chart(fig),use_container_width=True)
+    st.plotly_chart(aplicar_formato_chart(fig),use_container_width=True)
 
 c1,c2 = st.columns([60,40])
 with c1:
@@ -126,23 +131,23 @@ with c1:
                 annotation_text='Año actual', #Texto asociado a la línea
                 annotation_position='top left' #Positión del texto asociado a la línea
                 )
-    st.plotly_chart(utils.aplicar_formato_chart(fig),use_container_width=True)
+    st.plotly_chart(aplicar_formato_chart(fig),use_container_width=True)
 with c2:
     dfExpectativaVidaActual = dfAnoActual.groupby('continent').agg({'lifeExpectancy':'mean'}).reset_index().sort_values(by='lifeExpectancy')
     fig = px.bar(dfExpectativaVidaActual,x='lifeExpectancy',y='continent', title=f'Expectativa de vida {year}', color='continent',text_auto=',.0f',
                  color_discrete_sequence=color_discrete_sequence)
     fig.update_layout(showlegend=False) #Determina si se muestra o no la leyenda
-    st.plotly_chart(utils.aplicar_formato_chart(fig),use_container_width=True)
+    st.plotly_chart(aplicar_formato_chart(fig),use_container_width=True)
 
 c1,c2= st.columns(2)
 with c1:    
     st.subheader('Top 10 países más pobres')
     # st.dataframe(dfAnoActual.sort_values(by='mean_house_income').head(10)[['continent','country','mean_house_income']],hide_index=True, use_container_width=True)
-    utils.generar_tabla(dfAnoActual.sort_values(by='mean_house_income').head(10)[['continent','country','mean_house_income']])
+    generar_tabla(dfAnoActual.sort_values(by='mean_house_income').head(10)[['continent','country','mean_house_income']])
 with c2:    
     st.subheader('Top 10 países más ricos')
     # st.dataframe(dfAnoActual.sort_values(by='mean_house_income',ascending=False).head(10)[['continent','country','mean_house_income']],hide_index=True, use_container_width=True)
-    utils.generar_tabla(dfAnoActual.sort_values(by='mean_house_income',ascending=False).head(10)[['continent','country','mean_house_income']])
+    generar_tabla(dfAnoActual.sort_values(by='mean_house_income',ascending=False).head(10)[['continent','country','mean_house_income']])
 
 with st.container():
     df = px.data.gapminder().query('year==2007')
@@ -152,4 +157,4 @@ with st.container():
                         hover_name='country', # column to add to hover information
                         color_continuous_scale= color_continuous_scale,#px.colors.sequential.Purples,
                         title='Mapa de ingresos anuales en dólares')
-    st.plotly_chart(utils.aplicar_formato_chart(fig),use_container_width=True)
+    st.plotly_chart(aplicar_formato_chart(fig),use_container_width=True)

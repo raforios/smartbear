@@ -30,7 +30,7 @@ color_continuous_scale=['#2effc3','#25c99a','#105743']
 
 # Cargamos archivo de estilos
 # css = local_file(file_name = 'estilo.css', sub_dir = 'css')
-css = local_file(file_name = 'estilo.css', server = True, sub_dir = 'css')
+css = local_file(file_name = 'estilo.css', sub_dir = 'css')
 
 st.markdown(css, unsafe_allow_html = True)
 
@@ -40,8 +40,7 @@ today = datetime.date.today()
 year = today.year
 
 # Cargamos el dataframe desde un CSV
-# dfDatos = pd.read_csv(f'{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
-dfDatos = pd.read_csv(f'frontend/{st.secrets['DATA_FOLDER']}/gapminder_data.csv')
+dfDatos = pd.read_csv(f'{st.secrets['STATIC_FOLDER']}/data/gapminder_data.csv')
 
 # Declaramos los parámetros en la barra lateral
 # Filtro de continente

@@ -13,13 +13,13 @@ def remote_css(url):
     '''
     st.markdown(f'<link href="{url}" rel="stylesheet">', unsafe_allow_html = True)
 
-def local_file(file_name, server = False, sub_dir = 'img') -> str:
+def local_file(file_name, sub_dir = 'img') -> str:
     '''
         Loading local files
     '''
     current_dir = os.getcwd()
     path = Path(current_dir)
-    folder = 'frontend/static' if server else 'static'
+    folder = st.secrets['STATIC_FOLDER']
     file_path = os.path.join(path, folder, sub_dir, file_name)
 
     if os.path.exists(file_path):
@@ -49,31 +49,31 @@ def generate_icon_metric(fa_icon):
                     margin:auto;color:white;">
                     </i></div>''', unsafe_allow_html=True)
 
-def aplicar_formato_chart(fig,controls=False,legend=False,hover_template=None):
+def aplicar_formato_chart(fig,controls = False, legend = False, hover_template = None):
     '''
     Function
     '''
-    fig.update_layout(paper_bgcolor='white')
-    fig.update_layout(plot_bgcolor='white')
-    fig.update_layout(showlegend=legend)
-    fig.update_layout(title_pad_l=20)
+    fig.update_layout(paper_bgcolor = 'white')
+    fig.update_layout(plot_bgcolor = 'white')
+    fig.update_layout(showlegend = legend)
+    fig.update_layout(title_pad_l = 20)
     fig.update_layout(
     #font_family="Open Sans",
     #font_color="#8dc73f",
-    title_font_family="verdana",
-    title_font_color="black",
-    title_font_size=20,
-    font_size=15,
+    title_font_family = 'verdana',
+    title_font_color = 'black',
+    title_font_size = 20,
+    font_size = 15,
     #legend_title_font_color="green"
     )
 
     if hover_template:
-        if hover_template=="%":
-            fig.update_traces(hovertemplate='<b>%{x}</b> <br> %{y:,.2%}')
-        elif hover_template=="$":
-            fig.update_traces(hovertemplate='<b>%{x}</b> <br> $ %{y:,.1f}')
-        elif hover_template=="#":
-            fig.update_traces(hovertemplate='<b>%{x}</b> <br> %{y:,.0f}')
+        if hover_template == '%':
+            fig.update_traces(hovertemplate = '<b>%{x}</b> <br> %{y:,.2%}')
+        elif hover_template == '$':
+            fig.update_traces(hovertemplate = '<b>%{x}</b> <br> $ %{y:,.1f}')
+        elif hover_template == '#':
+            fig.update_traces(hovertemplate = '<b>%{x}</b> <br> %{y:,.0f}')
     if controls:
         fig.update_xaxes(
             rangeslider_visible=True

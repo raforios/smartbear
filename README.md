@@ -1,186 +1,75 @@
-# SMARTBEAR PROJECT
+# 🐻 SMARTBEAR API 📈
 
-## 
+Bienvenido a la arquitectura de microservicios **SMARTBEAR**, una plataforma robusta y escalable diseñada para el análisis de datos, Machine Learning y la toma de decisiones estratégicas. Esta API actúa como el backend de una aplicación de inteligencia de negocios, proporcionando funcionalidades avanzadas a través de un conjunto de microservicios especializados.
 
+---
 
-````shell
-user: raforios@gmail.com
-parrword: MotoPassword
+## 🎯 Propósito y Visión
 
-docker build -t smartbear .
+**SMARTBEAR** es una solución de backend que habilita a empresas a transformar datos en conocimientos accionables. Su arquitectura de microservicios desacoplada asegura flexibilidad, escalabilidad y una gestión de fallos eficiente. El frontend de la plataforma será construido con **Streamlit**, interactuando con esta API para visualizar datos y resultados de los modelos de Machine Learning.
 
-docker run -dit -v /Users/rafael/Work/projects/back/SmartBear/app/api:/app -p 8888:3000 --name smartbear smartbear
+Los pilares de la plataforma son:
 
-docker exec -ti smartbear /bin/bash 
+* **Análisis y Predicción:** Utilizar algoritmos de Machine Learning para predecir tendencias, clasificar datos y optimizar procesos.
+* **Gestión de Datos:** Proporcionar una administración centralizada y segura de archivos y datos geográficos.
+* **Seguridad:** Asegurar que todas las interacciones con los servicios estén autenticadas y autorizadas.
 
-docker pull postgres
+---
 
-docker run -d --rm -v /Users/rafael/Work/projects/back/bi/data/:/tmp --name pgsql-dev -e POSTGRES_PASSWORD=test1234 -e POSTGRES_USER=postgres -p 5432:5432 postgres
+## 🏛️ Arquitectura de Microservicios
 
-docker exec -it pgsql-dev bash
+La API de **SMARTBEAR** se compone de los siguientes microservicios principales, cada uno con una responsabilidad clara y definida.
 
+### 🔒 1. Auth-Handler-Service
+El microservicio central de seguridad. Se encarga de la gestión de usuarios por compañía y la emisión de tokens JWT para la autenticación y autorización en toda la plataforma.
+- **Tecnologías Clave:** Python 3.13, FastAPI, Docker, AWS Lambda, DynamoDB (para gestión de credenciales), JWT.
 
+### 📁 2. File-Handler-Service
+La interfaz principal para interactuar con **Amazon S3**. Permite la gestión programática de archivos para procesos de análisis, incluyendo la lectura, subida y eliminación de datos.
+- **Tecnologías Clave:** Python 3.13, FastAPI, Docker, AWS Lambda, Amazon S3, Boto3.
 
-# API
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-deactivate
+### 🗺️ 3. Localization-Service
+El motor de gestión de datos geográficos. Permite la creación de rutas planificadas, el registro de rutas ejecutadas en tiempo real, el control de asistencia por geolocalización y la generación de estadísticas comparativas.
+- **Tecnologías Clave:** Python 3.13, FastAPI, Docker, AWS Lambda, MySQL (vía SQLAlchemy).
 
-pip install fastapi
-pip install uvicorn
-pip install pymysql
-pip install SQLAlchemy
-pip install python-dotenv
+### 🧠 4. ML-Functions-Service
+El motor de cómputo para tareas de Machine Learning. Proporciona endpoints REST para ejecutar algoritmos de regresión lineal, regresión logística y normalización de datos.
+- **Tecnologías Clave:** Python 3.13, FastAPI, Docker, AWS Lambda, NumPy, Amazon S3 (para modelos y datos).
 
-uvicorn main:app --port 8080 --reload
+---
 
+## 🛠️ Tecnologías Comunes
 
-pip freeze > requirements.txt
-pip install -r requirements.txt
+Todos los microservicios comparten un conjunto de tecnologías comunes que garantizan una arquitectura unificada y eficiente:
 
+* **Lenguaje:** Python 3.13
+* **Framework Web:** FastAPI
+* **Contenedorización:** Docker
+* **Plataforma Serverless:** AWS Lambda
+* **Interacción con AWS:** Boto3
+* **Seguridad:** JWT para autenticación
+* **Despliegue:** Shell Script (`build_and_deploy.sh`)
 
+---
 
+## 🚀 Despliegue y Ejecución
 
-$ terraform init
-$ terraform plan -out=tfplan
-$ terraform apply --auto-approve
+Cada microservicio puede ser desplegado de forma independiente en **AWS Lambda** utilizando los scripts de shell proporcionados. La configuración se gestiona a través de archivos `.env`.
 
-````
-## CI/CD Steps:
+**Ejemplo de despliegue manual:**
 
+```shell
+# Desplegar el microservicio de autenticación
+./build_and_deploy.sh --path /ruta/al/proyecto/smartbear/services/auth
 
 
-## Manual Deploy Steps:
+```
 
-````shell
-IMAGE=smartbear
-ENV=staging
-API_GATEWAY_NAME=$IMAGE
-AWS_LAMBDA_ROLE_NAME="$IMAGE-lambda-role"
-AWS_LAMBDA_FUNC_NAME="$IMAGE-$ENV"
+---
 
+## 👤 Creado Por
 
-# Get AWS_ACCOUNT and AWS_REGION. Both will be used in future commands
-AWS_ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
-AWS_REGION=$(aws ec2 describe-availability-zones --query 'AvailabilityZones[0].RegionName' --output text)
+**Rafael Ríos Bascón**
+[raforios@gmail.com](mailto:raforios@gmail.com)
 
-# login AWS ECR
-aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
-# aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 732887652913.dkr.ecr.us-east-1.amazonaws.com
 
-# create repo
-aws ecr create-repository --repository-name $IMAGE --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
-
-# docker build --platform linux/x86_64 -t smartbear-api .
-docker build --platform linux/arm64 -t "$IMAGE":latest .
-
-# Create a timestamp tag
-TAG=$(date +%Y%m%d_%H%M%S)
-
-# Tag the image
-docker tag "$IMAGE":latest $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/"$IMAGE":"$TAG"
-# docker tag smartbear-api:latest 732887652913.dkr.ecr.us-east-1.amazonaws.com/smartbear-api:latest
-
-docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/"$IMAGE":"$TAG"
-# docker push 732887652913.dkr.ecr.us-east-1.amazonaws.com/smartbear-api:latest
-
-
-# Give the Lambda execution role a name in AWS_LAMBDA_ROLE_NAME
-aws iam create-role --role-name $AWS_LAMBDA_ROLE_NAME --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
-aws iam attach-role-policy --role-name $AWS_LAMBDA_ROLE_NAME --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-aws iam attach-role-policy --role-name $AWS_LAMBDA_ROLE_NAME --policy-arn arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-
-
-aws lambda create-function \
-    --function-name $AWS_LAMBDA_FUNC_NAME \
-    --package-type Image \
-    --code ImageUri=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE:$TAG \
-    --role $(aws iam get-role --role-name $AWS_LAMBDA_ROLE_NAME --query 'Role.Arn' --output text)
-
-# Upload the current ENV to Lambda
-aws lambda update-function-configuration \
-    --function-name $AWS_LAMBDA_FUNC_NAME \
-    --environment "Variables={ENV=$ENV}"
-
-
-# Update ENV variables for the lambda function
-# comment_re="^#.*"
-# VARIABLES="Variables={"
-# while IFS= read -r line || [ -n "$line" ]; do
-#     trimmed="$(echo $line | sed -e 's/^[[:space:]]*//')"
-#     if [[ ! $trimmed =~ $comment_re ]] && [ "$trimmed" != "" ];
-#     then
-#         VARIABLES+="$trimmed,"
-#     fi
-# done < .env.$ENV
-# VARIABLES+="ENV=$ENV}"
-
-
-# Upload the current ENV to Lambda
-# aws lambda update-function-configuration \
-#     --function-name $AWS_LAMBDA_FUNC_NAME \
-#     --environment $VARIABLES
-
-
-# Create API Gateway
-aws apigateway create-rest-api --name $API_GATEWAY_NAME --region $AWS_REGION
-
-# Get the API Gateway ID.
-# API_GATEWAY_ID might not be available immediately after the creation of the
-# new API Gateway. You might have to wait.
-API_GATEWAY_ID=$(aws apigateway get-rest-apis --query "items[?name=='$API_GATEWAY_NAME'].id" --output text)
-
-
-# First obtain the parent ID of the newly created API Gateway
-PARENT_ID=$(aws apigateway get-resources --rest-api-id $API_GATEWAY_ID --region $AWS_REGION --query 'items[0].id' --output text)
-
-# Then create a proxy resource under the parent ID.
-# PARENT_ID might not be available immediately after the creation of the
-# new API Gateway. You might have to wait.
-aws apigateway create-resource --rest-api-id $API_GATEWAY_ID --region $AWS_REGION --parent-id $PARENT_ID --path-part {proxy+}
-
-
-# First obtain the ID of the proxy resource just created
-RESOURCE_ID=$(aws apigateway get-resources --rest-api-id $API_GATEWAY_ID --query "items[?parentId=='$PARENT_ID'].id" --output text)
-
-RESOURCE_ID=$(aws apigateway get-resources --rest-api-id $API_GATEWAY_ID --query "items[?path=='/{proxy+}'].id" --output text)
-
-
-# Then add "ANY" method to the resource
-# RESOURCE_ID might not be available immediately after the creation of the
-# proxy resource. You might have to wait.
-aws apigateway put-method --rest-api-id $API_GATEWAY_ID --region $AWS_REGION --resource-id $RESOURCE_ID --http-method ANY --authorization-type "NONE"
-
-
-# get the ARN of the Lambda function we created earlier
-LAMBDA_ARN=$(aws lambda get-function --function-name $AWS_LAMBDA_FUNC_NAME --query 'Configuration.FunctionArn' --output text)
-
-aws apigateway put-integration \
-    --region $AWS_REGION \
-    --rest-api-id $API_GATEWAY_ID \
-    --resource-id $RESOURCE_ID \
-    --http-method ANY \
-    --type AWS_PROXY \
-    --integration-http-method POST \
-    --uri arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:$AWS_REGION:$AWS_ACCOUNT:function:$IMAGE-$ENV/invocations
-
-aws lambda add-permission --function-name $LAMBDA_ARN --source-arn "arn:aws:execute-api:$AWS_REGION:$AWS_ACCOUNT:$API_GATEWAY_ID/*/*/{proxy+}" --principal apigateway.amazonaws.com --statement-id apigateway-access --action lambda:InvokeFunction
-
-# Deploy to $ENV
-aws apigateway create-deployment --rest-api-id $API_GATEWAY_ID --stage-name $ENV --variables env=$ENV
-
-
-https://$API_GATEWAY_ID.execute-api.$AWS_REGION.amazonaws.com/$ENV/docs
-
-https://9oppktxx97.execute-api.us-east-1.amazonaws.com/docs
-
-
-echo $AWS_REGION
-echo $API_GATEWAY_ID
-echo $RESOURCE_ID
-
-
-cdk bootstrap aws://732887652913/us-east-1
-
-````

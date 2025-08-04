@@ -3,6 +3,7 @@
 '''
 import os
 import random
+from io import StringIO
 import pandas as pd
 import numpy as np
 import sqlalchemy as sa
@@ -70,6 +71,28 @@ def load_text_data(file_name: str, delimiter: str, until_col: int, skip_rows: in
         Load data from text file
     '''
     data = np.loadtxt(file_name, delimiter = delimiter, skiprows = skip_rows)
+    x_matrix = data[:,:until_col]
+    y = data[:,until_col]
+    return x_matrix, y
+
+
+def parse_txt_data(file_content: str, delimiter: str,
+    until_col: int, skip_rows: int) -> tuple:
+    '''
+    Parsea el contenido de un archivo TXT (con formato CSV)
+    para extraer una matriz de características X y un array de etiquetas Y.
+
+    Args:
+        file_content (str): El contenido del archivo TXT como una cadena.
+
+    Returns:
+        tuple[np.ndarray, np.ndarray]: Una tupla que contiene la matriz X
+                                       y el array Y.
+    '''
+    # Usar StringIO para que numpy.loadtxt pueda leer la cadena como un archivo
+    data_io = StringIO(file_content)
+
+    data = np.loadtxt(data_io, delimiter = delimiter, skiprows = skip_rows, dtype = np.float64)
     x_matrix = data[:,:until_col]
     y = data[:,until_col]
     return x_matrix, y

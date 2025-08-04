@@ -37,7 +37,7 @@ logging.basicConfig(level = logging.INFO,
         format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
-PARAMETERS = dotenv_values(os.path.join(os.path.dirname(os.path.dirname(BASEDIR)), 'api', '.env'))
+PARAMETERS = dotenv_values(os.path.join(os.path.dirname(os.path.dirname(BASEDIR)), 'notebooks', '.env'))
 
 def parse_txt_data(file_content: str, delimiter: str,
     until_col: int, skip_rows: int) -> tuple:
@@ -146,6 +146,8 @@ def login(url: str, email: str = None, password: str = None) -> str:
                         reported by the API response.
             Exception: For unexpected errors during the HTTP request or response processing.
     '''
+    message = f'BASEDIR:  {os.path.join(os.path.dirname(os.path.dirname(BASEDIR)), 'notebooks', '.env')}'
+    logging.info(message)
     login_email = email if email is not None else PARAMETERS.get('EMAIL')
     login_password = password if password is not None else PARAMETERS.get('PASSWORD')
 
@@ -237,8 +239,8 @@ def upload_file(token: str, url: str, endpoint: str, params: UploadFileParams) -
     message = f'''\nStep 1: Pre-signed URL for: {params.file_name}
     for s3://{params.bucket}/{params.file_path}'''
     logging.info(message)
-    message = f'URL pre-signed: {presigned_response['presigned_url']}'
-    logging.info(message)
+    # message = f'URL pre-signed: {presigned_response['presigned_url']}'
+    # logging.info(message)
     message = f'The file will be uploaded to S3 Key: {presigned_response['file_key']}'
     logging.info(message)
     message = f'\nStep 2: Uploading file {params.file_name} directly to S3...'
